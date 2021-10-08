@@ -1,7 +1,10 @@
-const params; // tempat menampung parameter yang ada
+import { getPost, getRandomPic, getRandomProfile, getPostComments, getAuthor } from './helpers.js';
+
+const params = new URLSearchParams(window.location.search); // tempat menampung parameter yang ada
 
 const elPageTitle = document.querySelector('#page-title');
 const elDetailBerita = document.querySelector('#detail-berita');
+const elKomentarBerita = document.querySelector('#komentar-berita');
 const elLoading = document.querySelector('#loading');
 const elNotFound = document.querySelector('#not-found');
 const elCardImg = document.querySelector('.card-img-top');
@@ -32,7 +35,28 @@ const createListElement = (comment) => {
 };
 
 const renderPost = async () => {
-  // EDIT HERE
+  let post = await getPost(params.get('post_id'));
+  if(post == null){
+    elNotFound.classList.remove('d-none');
+  }
+  let author = await getAuthor(post.userId);
+  let thumbnail = await getRandomPic();
+  let picAuthor = await getRandomProfile();
+  let comments = await getPostComments(params.get('post_id'));
+
+  elLoading.classList.add('d-none');
+  elDetailBerita.classList.remove('d-none');
+
+  elPageTitle.innerHTML = post.title
+  elCardImg.setAttribute('src', thumbnail);
+  elCardAuthorImg.setAttribute('src', picAuthor);
+  elCardAuthorName.innerHTML = author.name
+  elCardAuthorEmail.innerHTML = author.email
+  elCardAuthorName.setAttribute('href', 'author.html?author_id='+ post.userId);
+
+  for(let i = 0; i < comments.length; i++){
+    elKomentarBerita.appendChild(createListElement(comments[i]));
+  }
 };
 
 renderPost();
