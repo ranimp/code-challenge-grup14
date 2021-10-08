@@ -3,7 +3,13 @@ export const getPosts = async () => {
 };
 
 export const getPost = async (post_id) => {
-  // EDIT HERE
+  try {
+    const post = await fetch('https://jsonplaceholder.typicode.com/posts/' + post_id).then(response => response.json());
+    return post;
+  } catch (error) {
+    console.log('Error ', error);
+    throw error;
+  }
 };
 
 export const getPostComments = async (post_id) => {
